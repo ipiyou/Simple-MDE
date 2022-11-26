@@ -9,25 +9,25 @@ const useCursorMove = () => {
     offset: number,
     stat: { pos: number; done: boolean }
   ) => {
-    const currentText = parent.textContent && parent.innerText;
-
     if (stat.done) return stat;
-    if (parent.innerHTML === "<br>") {
-      stat.pos++;
-      return stat;
-    } else if (!currentText) return stat; // innerHTML도 포함해서
+    if (!parent.textContent) return stat;
 
     let currentNode = null;
-    if (parent.hasChildNodes()) {
-      for (let i = 0; i < parent.childNodes.length; i++) {
-        currentNode = parent.childNodes[i] as HTMLElement; // br 확인시 pos+1에 문자열에 <br/>추가
-        if (currentNode == node) {
-          stat.pos = stat.pos + offset;
+    if (parent.childNodes.length == 0) {
+      stat.pos += parent.textContent.length;
+    } else {
+      for (var i = 0; i < parent.childNodes.length && !stat.done; i++) {
+        currentNode = parent.childNodes[i] as HTMLElement;
+        if (currentNode.innerHTML == "<br>") {
+          stat.pos++;
+        }
+        if (currentNode === node) {
+          stat.pos += offset;
           stat.done = true;
           return stat;
         } else getFocusOff(currentNode, node, offset, stat);
       }
-    } else stat.pos += currentText.length;
+    }
     return stat;
   };
 
@@ -40,7 +40,7 @@ const useCursorMove = () => {
     const off = sel?.focusOffset;
     if (!sel || !FocusNode || typeof off !== "number") return stat;
     const pos = getFocusOff(parent, FocusNode, off, stat);
-    
+
     pos.done = false;
     return pos;
   };
