@@ -48,7 +48,7 @@ const useSetMark = () => {
 
   const DisableMark = (str: string) => {
     DisableFeature(ApplyList);
-    return marked.parse(str);
+    return marked.parseInline(str);
   };
   
   return [Mark, DisableMark];
